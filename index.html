@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jean Ardaillou — Développeur Fullstack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07070a;
+      --gold:      #c9963a;
+      --gold-dim:  #7a5b22;
+      --white:     #f0ede6;
+      --grey:      #5a5860;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-mono:    'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Curseur ── */
+    #cursor {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, opacity 0.3s;
+    }
+    #cursor.hover { width: 18px; height: 18px; opacity: 0.3; }
+
+    /* ── Canvas ── */
+    #canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Noise ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .content { position: relative; z-index: 2; }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 8vw;
+      position: relative;
+    }
+
+    /* Texte à gauche (objet à droite) */
+    .text-left  { max-width: 44vw; margin-right: auto; }
+    /* Texte à droite (objet à gauche) */
+    .text-right { max-width: 44vw; margin-left: auto; }
+
+    .section__num {
+      font-size: 0.78rem;
+      letter-spacing: 0.4em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: var(--gold-dim);
+      font-size: 0.72rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      flex: 1 1 auto;
+      max-width: 80px;
+      height: 1px;
+      background: var(--gold-dim);
+    }
+
+    /* ── HERO ── */
+    .hero { flex-direction: column; justify-content: center; }
+
+    .hero__label {
+      font-size: 0.78rem;
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+
+    .hero__name {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+    .hero__name em { font-style: italic; color: var(--gold); }
+
+    .hero__title {
+      font-size: clamp(0.82rem, 1.4vw, 1rem);
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s forwards;
+    }
+
+    .hero__scroll {
+      position: absolute;
+      bottom: 3rem;
+      left: 8vw;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      opacity: 0;
+      animation: fadeUp 1s 1.4s forwards;
+    }
+    .hero__scroll::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-dim);
+    }
+
+    /* ── ABOUT ── */
+    .about { min-height: 150vh; }
+    .about__inner { display: flex; flex-direction: column; gap: 2.5rem; }
+
+    .about__text p {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+      font-weight: 300;
+      line-height: 1.45;
+    }
+    .about__text p span { color: var(--gold); font-style: italic; }
+
+    .about__tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .tag {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      border-radius: 2px;
+    }
+
+    /* ── SKILLS ── */
+    .skills { min-height: 150vh; }
+    .skills__inner { display: flex; flex-direction: column; gap: 3rem; }
+
+    .skills__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid #1e1e24;
+    }
+
+    .skill-item {
+      padding: 1.6rem 0;
+      border-bottom: 1px solid #1e1e24;
+      border-right: 1px solid #1e1e24;
+    }
+    .skill-item:nth-child(2n) { border-right: none; }
+
+    .skill-item__label {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.6rem;
+    }
+
+    .skill-item__name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+
+    /* ── PROJECTS ── */
+    .projects {
+      min-height: 180vh;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4rem;
+      padding-top: 6rem;
+      padding-bottom: 6rem;
+    }
+
+    .projects__cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 56rem;
+    }
+
+    .project-card:nth-child(2) { margin-top: 4rem; }
+
+    .project-card {
+      position: relative;
+      border: 1px solid #1e1e24;
+      background: #0d0d12;
+      overflow: hidden;
+      cursor: none;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: border-color 0.4s;
+    }
+    .project-card:hover { border-color: var(--gold-dim); }
+
+    .project-card__img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+      filter: grayscale(100%) brightness(0.7);
+      transition: filter 0.6s;
+      display: block;
+    }
+    .project-card:hover .project-card__img { filter: grayscale(0%) brightness(0.9); }
+
+    .project-card__placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: #111118;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: #1e1e28;
+    }
+
+    .project-card__body {
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .project-card__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .project-card__name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 400;
+    }
+
+    .project-card__badge {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.3rem;
+    }
+
+    .project-card__desc {
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--grey);
+      font-weight: 300;
+    }
+
+    .project-card__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .project-card__tag {
+      font-size: 0.70rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid #2a2a32;
+      color: #4a4858;
+    }
+
+    .project-card__link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-top: 0.5rem;
+      transition: color 0.3s;
+    }
+    .project-card:hover .project-card__link { color: var(--gold); }
+    .project-card__link::after { content: '→'; transition: transform 0.3s; }
+    .project-card:hover .project-card__link::after { transform: translateX(4px); }
+
+    .project-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.5s;
+    }
+    .project-card:hover::after { width: 100%; }
+
+    /* ── CONTACT ── */
+    .contact { min-height: 150vh; flex-direction: column; justify-content: center; gap: 2.5rem; }
+
+    .contact__heading {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+    .contact__heading em { font-style: italic; color: var(--gold); }
+
+    .contact__links { display: flex; flex-direction: column; gap: 0.8rem; }
+
+    .contact__link {
+      font-size: 0.82rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: color 0.3s;
+      width: fit-content;
+    }
+    .contact__link::before {
+      content: '';
+      display: block;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+    .contact__link:hover { color: var(--gold); }
+    .contact__link:hover::before { width: 30px; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 3rem 8vw;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      border-top: 1px solid #14141a;
+    }
+
+    /* ── Loader ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: opacity 0.8s, visibility 0.8s;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader__text {
+      font-size: 0.78rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+
+    .loader__bar {
+      width: 120px;
+      height: 1px;
+      background: #1a1a20;
+      overflow: hidden;
+    }
+    .loader__bar::after {
+      content: '';
+      display: block;
+      height: 100%;
+      background: var(--gold);
+      animation: loadBar 1.2s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes loadBar {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .text-left, .text-right { max-width: 100%; margin: 0; }
+      .about, .skills, .contact { min-height: 100vh; }
+      .projects__cards { grid-template-columns: 1fr; }
+      .project-card:nth-child(2) { margin-top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor"></div>
+
+  <div id="loader">
+    <div class="loader__text">Chargement</div>
+    <div class="loader__bar"></div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <div class="content">
+
+    <!-- HERO : texte gauche, objet droite -->
+    <section class="hero">
+      <div class="text-left">
+        <div class="hero__label">Portfolio · 2025</div>
+        <h1 class="hero__name">Jean<br><em>Ardaillou</em></h1>
+        <p class="hero__title">Développeur Fullstack</p>
+      </div>
+      <div class="hero__scroll">Scroll</div>
+    </section>
+
+    <!-- ABOUT : texte droite, objet gauche -->
+    <section class="about">
+      <div class="text-right about__inner">
+        <div>
+          <div class="section__num">01 — À propos</div>
+          <div class="ornament">–</div>
+        </div>
+        <div class="about__text">
+          <p>
+            Je conçois des expériences web qui allient
+            <span>performance technique</span> et
+            <span>sensibilité visuelle</span> — du backend
+            à l'interface, du code propre à l'animation soignée.
+          </p>
+        </div>
+        <div class="about__tags">
+          <span class="tag">Laravel</span>
+          <span class="tag">WordPress</span>
+          <span class="tag">Three.js</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">PHP</span>
+          <span class="tag">HTML / CSS</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">MongoDB</span>
+          <span class="tag">Git</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS : texte gauche, objet droite -->
+    <section class="skills">
+      <div class="text-left skills__inner">
+        <div>
+          <div class="section__num">02 — Compétences</div>
+          <div class="ornament">–</div>
+        </div>
+        <div class="skills__grid">
+          <div class="skill-item">
+            <div class="skill-item__label">Frontend</div>
+            <div class="skill-item__name">Design &amp; UI</div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-item__label">Backend</div>
+            <div class="skill-item__name">Laravel / PHP</div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-item__label">CMS</div>
+            <div class="skill-item__name">WordPress</div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-item__label">3D Web</div>
+            <div class="skill-item__name">Three.js</div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-item__label">Base de données</div>
+            <div class="skill-item__name">SQL / NoSQL</div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-item__label">Workflow</div>
+            <div class="skill-item__name">Git / Vite</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS : objet s'efface -->
+    <section class="projects">
+      <div class="projects__header">
+        <div class="section__num">03 — Projets</div>
+        <div class="ornament">–</div>
+      </div>
+      <div class="projects__cards">
+
+        <a href="https://dvxy67.github.io/team_2/" target="_blank" rel="noopener" class="project-card">
+          <img src="./dogitech.png" alt="Dogitech" class="project-card__img"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="project-card__placeholder" style="display:none;">DGT</div>
+          <div class="project-card__body">
+            <div class="project-card__header">
+              <h3 class="project-card__name">Dogitech</h3>
+              <span class="project-card__badge">Mobile</span>
+            </div>
+            <p class="project-card__desc">
+              Site réalisé en 3 jours lors d'un hackathon pour un client plombier-électricien.
+              Conçu et optimisé pour une consultation mobile.
+            </p>
+            <div class="project-card__tags">
+              <span class="project-card__tag">HTML</span>
+              <span class="project-card__tag">CSS</span>
+              <span class="project-card__tag">JavaScript</span>
+              <span class="project-card__tag">Hackathon</span>
+            </div>
+            <span class="project-card__link">Voir le projet</span>
+          </div>
+        </a>
+
+        <a href="https://ardjea.dreamhosters.com" target="_blank" rel="noopener" class="project-card">
+          <img src="./foyer.png" alt="Foyer Anderlechtois" class="project-card__img"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="project-card__placeholder" style="display:none;">FA</div>
+          <div class="project-card__body">
+            <div class="project-card__header">
+              <h3 class="project-card__name">Foyer Anderlechtois</h3>
+              <span class="project-card__badge">Desktop &amp; Mobile</span>
+            </div>
+            <p class="project-card__desc">
+              Refonte complète du site web en WordPress avec thème sur mesure.
+              Le client peut modifier chaque image en totale autonomie.
+            </p>
+            <div class="project-card__tags">
+              <span class="project-card__tag">WordPress</span>
+              <span class="project-card__tag">Thème custom</span>
+              <span class="project-card__tag">PHP</span>
+              <span class="project-card__tag">CSS</span>
+            </div>
+            <span class="project-card__link">Voir le projet</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- CONTACT : texte gauche, objet droite -->
+    <section class="contact">
+      <div class="text-left">
+        <div>
+          <div class="section__num">04 — Contact</div>
+          <div class="ornament">–</div>
+        </div>
+        <h2 class="contact__heading">Travaillons<br><em>ensemble.</em></h2>
+        <div class="contact__links">
+          <a href="mailto:jean@example.com" class="contact__link">jean@example.com</a>
+          <a href="https://github.com/" target="_blank" class="contact__link">GitHub</a>
+          <a href="https://linkedin.com/" target="_blank" class="contact__link">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>&copy; 2025 Jean Ardaillou — Bruxelles, Belgique</footer>
+
+  <script type="module" src="/main.js"></script>
+
+  <script>
+    // Curseur
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .project-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+
+    // Stagger cartes
+    const cardObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.project-card').forEach((card, i) => {
+            setTimeout(() => {
+              card.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, i * 220);
+          });
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    const projectsCards = document.querySelector('.projects__cards');
+    if (projectsCards) cardObserver.observe(projectsCards);
+  </script>
+
+</body>
+</html>
