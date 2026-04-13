@@ -681,8 +681,26 @@ footer {
 }
 
 @media (max-width: 600px) {
+  /* Layout général */
   section { padding: 4rem 6vw; }
+  .about, .contact { min-height: auto; padding: 5rem 6vw; }
+  .projects { min-height: auto; padding: 5rem 6vw; }
+
+  /* Hero */
   .hero__name { font-size: clamp(3.2rem, 14vw, 5rem); }
+  .hero__actions { flex-wrap: wrap; gap: 1.5rem; }
+
+  /* Timeline */
   .timeline-item { grid-template-columns: 1px 1fr; gap: 0 1.5rem; }
   .timeline-item__date { display: none; }
+
+  /* Skills — 1 colonne sur mobile */
+  .skills__grid { grid-template-columns: 1fr; }
+  .skill-item { border-right: none; }
+
+  /* Contact — email sans débordement */
+  .contact__link { letter-spacing: 0.1em; font-size: 0.75rem; }
+
+  /* Footer — empilé verticalement */
+  footer { flex-direction: column; gap: 0.6rem; text-align: center; }
 }
