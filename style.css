@@ -3,11 +3,11 @@
 :root {
   --bg:         #07070a;
   --gold:       #c9963a;
-  --gold-dim:   #7a5b22;
+  --gold-dim:   #a07830;
   --gold-glow:  rgba(201,150,58,0.08);
   --white:      #f0ede6;
-  --grey:       #5a5860;
-  --grey-light: #3a3840;
+  --grey:       #9a98a8;
+  --grey-light: #72707e;
   --font-display: 'Cormorant Garamond', serif;
   --font-mono:    'DM Mono', monospace;
 }
@@ -90,7 +90,7 @@ section {
 
 .section__num {
   font-size: 0.75rem;
-  letter-spacing: 0.45em;
+  letter-spacing: 0.28em;
   color: var(--gold-dim);
   text-transform: uppercase;
   margin-bottom: 0.6rem;
@@ -206,7 +206,7 @@ section {
   font-size: 0.75rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--grey);
+  color: rgba(240, 237, 230, 0.55);
   text-decoration: none;
   transition: color 0.3s;
 }
@@ -246,7 +246,7 @@ section {
 .about__text p + p {
   margin-top: 1.4rem;
   font-size: clamp(1rem, 1.8vw, 1.5rem);
-  color: var(--grey);
+  color: var(--grey-light);
 }
 .about__text span { color: var(--gold); font-style: italic; }
 
@@ -356,7 +356,7 @@ section {
 }
 
 .skill-item {
-  padding: 1.8rem 0;
+  padding: 1.8rem 1.5rem;
   border-bottom: 1px solid #1e1e24;
   border-right: 1px solid #1e1e24;
   transition: background 0.3s;
@@ -380,10 +380,9 @@ section {
 }
 
 .skill-item__stack {
-  font-size: 0.68rem;
-  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
   color: var(--grey);
-  text-transform: uppercase;
 }
 
 /* ── PROJECTS ── */
@@ -455,7 +454,7 @@ section {
 }
 
 .project-card__context {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold-dim);
@@ -475,7 +474,7 @@ section {
 }
 
 .project-card__badge {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   padding: 0.3rem 0.65rem;
@@ -504,12 +503,12 @@ section {
 .project-card__tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
 .project-card__tag {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 0.22rem 0.55rem;
-  border: 1px solid #2a2a32;
-  color: #4a4858;
+  border: 1px solid #3a3845;
+  color: #7a788a;
 }
 
 .project-card__link {
@@ -603,7 +602,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 2.5rem 8vw;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--grey);
